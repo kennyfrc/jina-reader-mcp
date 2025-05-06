@@ -11,6 +11,14 @@ A Model Context Protocol (MCP) server for integrating with Jina Reader API, allo
 
 ## Setup
 
+### Option 1: Global Installation (Recommended)
+
+```bash
+npm install -g @kennyfrc/jina-reader
+```
+
+### Option 2: From Source
+
 1. Clone this repository
 2. Install dependencies:
    ```bash
