@@ -1,16 +1,24 @@
 # Creating Your Own Model Context Protocol (MCP) Server
 
-This guide explains how to create your own MCP server based on the [Model Context Protocol](https://modelcontextprotocol.io), which allows AI models to interact with custom tools.
+This tutorial walks you through creating a basic MCP server using the [Model Context Protocol](https://modelcontextprotocol.io), enabling AI assistants like Claude to interact with your custom tools.
+
+## What You'll Build
+
+We'll create a simple but functional MCP server that:
+1. Connects to the MCP protocol
+2. Provides a basic tool functionality
+3. Handles API requests and returns formatted responses
+
+By the end, you'll understand the key components of an MCP server and be ready to create your own custom tools.
 
 ## Prerequisites
 
 - Node.js (v18+)
 - Basic understanding of TypeScript/JavaScript
-- Familiarity with the MCP specification
 
-## Getting Started
+## Step 1: Set Up Your Project
 
-### 1. Set Up Your Project
+Let's start by creating the project structure:
 
 ```bash
 # Create a new directory for your project
@@ -21,7 +29,7 @@ cd my-mcp-server
 npm init -y
 
 # Install required dependencies
-npm install @modelcontextprotocol/sdk zod dotenv
+npm install @modelcontextprotocol/sdk zod node-fetch
 npm install --save-dev typescript @types/node
 
 # Initialize TypeScript configuration
@@ -44,7 +52,7 @@ Update your `tsconfig.json` to include:
 }
 ```
 
-Update your `package.json`:
+Configure your `package.json`:
 
 ```json
 {
@@ -52,6 +60,9 @@ Update your `package.json`:
   "version": "1.0.0",
   "type": "module",
   "main": "dist/index.js",
+  "bin": {
+    "my-mcp": "dist/index.js"
+  },
   "scripts": {
     "build": "tsc && chmod +x dist/index.js",
     "start": "node dist/index.js",
@@ -60,9 +71,9 @@ Update your `package.json`:
 }
 ```
 
-### 2. Create Your Server Structure
+## Step 2: Create a Minimal MCP Server
 
-Create a basic MCP server in `src/index.ts`:
+Create a file at `src/index.ts` with this basic server:
 
 ```typescript
 #!/usr/bin/env node
@@ -70,10 +81,6 @@ Create a basic MCP server in `src/index.ts`:
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import dotenv from "dotenv";
-
-// Load environment variables
-dotenv.config();
 
 // Create your MCP server
 const server = new McpServer({
@@ -81,7 +88,7 @@ const server = new McpServer({
   version: "1.0.0",
 });
 
-// Register your first tool
+// Register a simple hello world tool
 server.tool(
   "hello_world",
   "A simple greeting tool",
@@ -118,9 +125,9 @@ main().catch((error) => {
 });
 ```
 
-### 3. Building Tools
+## Step 3: Understanding Tool Structure
 
-Each tool follows this structure:
+Each MCP tool follows a consistent pattern:
 
 ```typescript
 server.tool(
@@ -132,9 +139,8 @@ server.tool(
     param2: z.number().optional().describe("Optional parameter"),
   },
   async ({ param1, param2 }) => {
-    // Tool implementation
-    // This is where you put your logic
-
+    // Your tool implementation logic goes here
+    
     // Return response in MCP format
     return {
       content: [
@@ -148,49 +154,54 @@ server.tool(
 );
 ```
 
-### 4. Adding External API Integration
+## Step 4: API Integration Example
 
-If your tool needs to call external APIs, you can add the necessary logic:
+Let's create a practical example by adding a weather API integration:
 
 ```typescript
-async function callExternalAPI(endpoint, params) {
+import fetch from "node-fetch";
+
+// Helper function for API calls
+async function getWeather(location: string) {
   try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.API_KEY}`,
-      },
-      body: JSON.stringify(params),
-    });
+    // Replace with your actual API endpoint and key
+    const apiKey = process.env.WEATHER_API_KEY;
+    
+    if (!apiKey) {
+      throw new Error("WEATHER_API_KEY environment variable not set");
+    }
+    
+    const response = await fetch(
+      `https://api.example.com/weather?location=${encodeURIComponent(location)}&appid=${apiKey}`
+    );
     
     if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
+      throw new Error(`Weather API error: ${response.status}`);
     }
     
     return await response.json();
   } catch (error) {
-    console.error("API call failed:", error);
+    console.error("Weather API call failed:", error);
     throw error;
   }
 }
 
-// Then use this in your tool
+// Register the weather tool
 server.tool(
-  "api_tool",
-  "Tool that calls an external API",
+  "get_weather",
+  "Get current weather for a location",
   {
-    query: z.string().describe("Query to send to the API"),
+    location: z.string().describe("City name or location"),
   },
-  async ({ query }) => {
+  async ({ location }) => {
     try {
-      const result = await callExternalAPI("https://api.example.com/endpoint", { query });
+      const weather = await getWeather(location);
       
       return {
         content: [
           {
             type: "text",
-            text: `API returned: ${JSON.stringify(result)}`,
+            text: `Current weather in ${location}: ${weather.description}, temperature: ${weather.temp}°C`,
           },
         ],
       };
@@ -199,7 +210,7 @@ server.tool(
         content: [
           {
             type: "text",
-            text: `Error: ${error.message}`,
+            text: `Error: ${error instanceof Error ? error.message : String(error)}`,
           },
         ],
       };
@@ -208,52 +219,64 @@ server.tool(
 );
 ```
 
-### 5. Response Formatting
+## Step 5: Response Formatting
 
-MCP supports various content types:
+You can return different types of content in your responses:
 
 ```typescript
-// Text response
+// Simple text response
 return {
   content: [
     {
       type: "text",
-      text: "Simple text response",
+      text: "This is a simple text response",
     },
   ],
 };
 
-// Rich formatted response with multiple elements
+// Rich formatted response
 return {
   content: [
     {
       type: "text",
-      text: "Result header",
+      text: "# Weather Report\n\nHere's your weather information:",
     },
     {
       type: "code",
       language: "json",
-      text: JSON.stringify(data, null, 2),
+      text: JSON.stringify(weatherData, null, 2),
     },
-    {
-      type: "image",
-      url: "data:image/png;base64,..." // Base64 encoded image
-    }
   ],
 };
 ```
 
-## Integrating with Claude Desktop
+## Step 6: Build and Run
 
-To use your MCP server with Claude Desktop:
+Build and run your MCP server:
 
-1. Configure `claude-desktop-config.json`:
+```bash
+# Build the project
+npm run build
+
+# Run the server
+npm start
+```
+
+## Step 7: Using with Claude Desktop
+
+To integrate with Claude Desktop:
+
+1. Create a `claude-desktop-config.json` file:
 
 ```json
 {
   "mcpServers": {
-    "my-server": {
-      "command": "node /path/to/your/dist/index.js"
+    "my-mcp-server": {
+      "command": "node",
+      "args": ["/absolute/path/to/your/dist/index.js"],
+      "env": {
+        "WEATHER_API_KEY": "your_api_key_here"
+      }
     }
   }
 }
@@ -268,24 +291,23 @@ To use your MCP server with Claude Desktop:
 
 ## Best Practices
 
-1. **Error Handling**: Always include robust error handling in your tools to avoid crashes.
+1. **Error Handling**: Always include robust error handling in your tools
+2. **Environment Variables**: Use environment variables for API keys and sensitive information
+3. **Clear Documentation**: Provide clear descriptions for your tools and parameters
+4. **Descriptive Tool Names**: Use verb_noun format for tools (e.g., `get_weather`, `search_database`)
+5. **Consistent Responses**: Format your responses consistently for better user experience
 
-2. **Logging**: Add detailed logging for debugging issues during development.
+## Next Steps
 
-3. **Security**: Never expose sensitive credentials or API keys in your server's responses.
+You now have a functional MCP server! Here are some ways to enhance it:
 
-4. **Documentation**: Provide clear descriptions for your tools and parameters so models can use them appropriately.
-
-5. **Performance**: Keep tool execution efficient, especially for tools that may be called frequently.
-
-6. **Tool Naming**: Use descriptive, verb_noun naming format for your tools (e.g., `get_weather`, `search_database`).
-
-## Example: Complete MCP Server
-
-For a complete working example, refer to the OneCompiler MCP server which allows running code snippets in various programming languages through the OneCompiler API.
+- Add more tools to expand functionality
+- Implement caching for API responses
+- Add validation and better error messages
+- Create a more complex response formatter
 
 ## Additional Resources
 
-- [MCP Official Documentation](https://modelcontextprotocol.io)
-- [MCP SDK Documentation](https://modelcontextprotocol.io/docs/javascript-sdk)
-- [MCP Server Quickstart Guide](https://modelcontextprotocol.io/quickstart/server)
+- [Model Context Protocol Documentation](https://modelcontextprotocol.io)
+- [MCP SDK Reference](https://modelcontextprotocol.io/docs/javascript-sdk)
+- [Claude Desktop Documentation](https://claude.ai/docs/desktop)
