@@ -1,10 +1,10 @@
-# Using Jina MCP with npx
+# Using Jina Reader with npx
 
-This guide explains how to use the Jina MCP package using npx, both for users and developers.
+This guide explains how to use the Jina Reader package using npx, both for users and developers.
 
-## For Users: Running Jina MCP from npm
+## For Users: Running Jina Reader from npm
 
-The easiest way to use Jina MCP is directly from npm without installing it globally.
+The easiest way to use Jina Reader is directly from npm without installing it globally.
 
 ### Prerequisites
 
@@ -13,10 +13,10 @@ The easiest way to use Jina MCP is directly from npm without installing it globa
 
 ### Running with npx
 
-Run the Jina MCP server with a single command:
+Run the Jina Reader server with a single command:
 
 ```bash
-JINA_API_KEY=your_jina_api_key npx -y @kennyfrc/jina-mcp
+JINA_API_KEY=your_jina_api_key npx -y @kennyfrc/jina-reader
 ```
 
 This command:
@@ -26,7 +26,7 @@ This command:
 
 ### Integrating with Claude Desktop
 
-To use Jina MCP with Claude Desktop:
+To use Jina Reader with Claude Desktop:
 
 1. Create or edit your `claude-desktop-config.json` file:
 
@@ -35,7 +35,7 @@ To use Jina MCP with Claude Desktop:
   "mcpServers": {
     "jina-reader": {
       "command": "npx",
-      "args": ["-y", "@kennyfrc/jina-mcp"],
+      "args": ["-y", "@kennyfrc/jina-reader"],
       "env": {
         "JINA_API_KEY": "your_jina_api_key_here"
       }
@@ -79,7 +79,7 @@ For more extended development, you can use npm link:
    ```
 2. Now you can run it as if it were globally installed:
    ```bash
-   JINA_API_KEY=your_jina_api_key jina-mcp
+   JINA_API_KEY=your_jina_api_key jina-reader
    ```
 
 When you're done developing, unlink with:
@@ -98,7 +98,7 @@ To test your local development version with Claude Desktop:
   "mcpServers": {
     "jina-reader": {
       "command": "node",
-      "args": ["/absolute/path/to/your/jinamcp/dist/index.js"],
+      "args": ["/absolute/path/to/your/jina-reader/dist/index.js"],
       "env": {
         "JINA_API_KEY": "your_jina_api_key_here"
       }
@@ -140,7 +140,7 @@ Make sure you're properly setting the environment variable before running the co
 If you're experiencing issues with dependencies, try using the `--ignore-existing` flag:
 
 ```bash
-JINA_API_KEY=your_jina_api_key npx -y --ignore-existing @kennyfrc/jina-mcp
+JINA_API_KEY=your_jina_api_key npx -y --ignore-existing @kennyfrc/jina-reader
 ```
 
 ## Next Steps

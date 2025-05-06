@@ -29,7 +29,7 @@ The easiest way to use this package is with npx. You need to provide your Jina A
 
 ```bash
 # Set the API key directly in the command
-JINA_API_KEY=your_jina_api_key npx -y @kennyfrc/jina-mcp
+JINA_API_KEY=your_jina_api_key npx -y @kennyfrc/jina-reader
 ```
 
 ### Starting the server locally
@@ -50,7 +50,7 @@ Add this to your `claude-desktop-config.json`:
   "mcpServers": {
     "jina-reader": {
       "command": "npx",
-      "args": ["-y", "@kennyfrc/jina-mcp"],
+      "args": ["-y", "@kennyfrc/jina-reader"],
       "env": {
         "JINA_API_KEY": "your_jina_api_key_here"
       }

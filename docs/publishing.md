@@ -23,12 +23,12 @@ This document contains instructions for publishing the package to npm.
 
 4. Once published, users can install it globally:
    ```bash
-   npm install -g @kennyfrc/jina-mcp
+   npm install -g @kennyfrc/jina-reader
    ```
 
    Or run it directly with npx:
    ```bash
-   npx -y @kennyfrc/jina-mcp
+   npx -y @kennyfrc/jina-reader
    ```
 
 ## Versioning

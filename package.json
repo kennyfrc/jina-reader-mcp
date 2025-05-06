@@ -1,10 +1,10 @@
 {
-  "name": "@kennyfrc/jina-mcp",
+  "name": "@kennyfrc/jina-reader",
   "version": "1.0.0",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "jina-mcp": "dist/index.js"
+    "jina-reader": "dist/index.js"
   },
   "scripts": {
     "build": "tsc && chmod +x dist/index.js",
