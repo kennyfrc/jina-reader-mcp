@@ -28,7 +28,18 @@ A Model Context Protocol (MCP) server for integrating with Jina Reader API, allo
 
 ## Usage
 
-### Starting the server
+### Using with npx
+
+The easiest way to use this package is with npx:
+
+```bash
+# Make sure you have a .env file with your JINA_API_KEY in your current directory
+npx -y @kennyfrc/jina-mcp
+```
+
+### Starting the server locally
+
+If you've cloned the repository:
 
 ```bash
 npm start
@@ -37,6 +48,18 @@ npm start
 ### Integrating with Claude Desktop
 
 Add this to your `claude-desktop-config.json`:
+
+```json
+{
+  "mcpServers": {
+    "jina-reader": {
+      "command": "npx -y @kennyfrc/jina-mcp"
+    }
+  }
+}
+```
+
+Or if you've cloned the repository:
 
 ```json
 {
@@ -168,3 +191,34 @@ For development with automatic rebuilding:
 ```bash
 npm run dev
 ```
+
+## Publishing to npm
+
+To publish this package to npm:
+
+1. Make sure you're logged in to npm:
+   ```bash
+   npm login
+   ```
+
+2. Build the package:
+   ```bash
+   npm run build
+   ```
+
+3. Publish to npm:
+   ```bash
+   npm publish --access public
+   ```
+
+   The `--access public` flag is required for scoped packages (those with @username prefix).
+
+4. Once published, users can install it globally:
+   ```bash
+   npm install -g @kennyfrc/jina-mcp
+   ```
+
+   Or run it directly with npx:
+   ```bash
+   npx -y @kennyfrc/jina-mcp
+   ```

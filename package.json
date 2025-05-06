@@ -1,8 +1,11 @@
 {
-  "name": "jina-reader-mcp",
+  "name": "@kennyfrc/jina-mcp",
   "version": "1.0.0",
   "type": "module",
   "main": "dist/index.js",
+  "bin": {
+    "jina-mcp": "dist/index.js"
+  },
   "scripts": {
     "build": "tsc && chmod +x dist/index.js",
     "start": "node --experimental-specifier-resolution=node dist/index.js",
