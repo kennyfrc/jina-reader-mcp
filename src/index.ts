@@ -3,11 +3,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import dotenv from "dotenv";
 import fetch from "node-fetch";
-
-// Load environment variables
-dotenv.config();
 
 // Engine types for Jina Reader
 type JinaEngineType = "none" | "direct" | "browser" | "cf-browser-rendering";
@@ -35,10 +31,11 @@ async function callJinaReaderAPI(
   start_index?: number, 
   useCache: boolean = true
 ) {
+  // Try to get API key from environment variable
   const apiKey = process.env.JINA_API_KEY;
   
   if (!apiKey) {
-    throw new Error("JINA_API_KEY not configured. Please set it in your .env file.");
+    throw new Error("JINA_API_KEY environment variable not set. Please set it before running the server.");
   }
   
   // Create a cache key based on the request parameters

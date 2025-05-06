@@ -16,12 +16,7 @@ A Model Context Protocol (MCP) server for integrating with Jina Reader API, allo
    ```bash
    npm install
    ```
-3. Copy the example environment file and add your Jina API key:
-   ```bash
-   cp .env.example .env
-   # Edit .env with your actual Jina API key
-   ```
-4. Build the project:
+3. Build the project:
    ```bash
    npm run build
    ```
@@ -30,11 +25,11 @@ A Model Context Protocol (MCP) server for integrating with Jina Reader API, allo
 
 ### Using with npx
 
-The easiest way to use this package is with npx:
+The easiest way to use this package is with npx. You need to provide your Jina API key as an environment variable:
 
 ```bash
-# Make sure you have a .env file with your JINA_API_KEY in your current directory
-npx -y @kennyfrc/jina-mcp
+# Set the API key directly in the command
+JINA_API_KEY=your_jina_api_key npx -y @kennyfrc/jina-mcp
 ```
 
 ### Starting the server locally
@@ -42,7 +37,8 @@ npx -y @kennyfrc/jina-mcp
 If you've cloned the repository:
 
 ```bash
-npm start
+# Provide the API key when running
+JINA_API_KEY=your_jina_api_key npm start
 ```
 
 ### Integrating with Claude Desktop
@@ -53,7 +49,11 @@ Add this to your `claude-desktop-config.json`:
 {
   "mcpServers": {
     "jina-reader": {
-      "command": "npx -y @kennyfrc/jina-mcp"
+      "command": "npx",
+      "args": ["-y", "@kennyfrc/jina-mcp"],
+      "env": {
+        "JINA_API_KEY": "your_jina_api_key_here"
+      }
     }
   }
 }
@@ -65,7 +65,11 @@ Or if you've cloned the repository:
 {
   "mcpServers": {
     "jina-reader": {
-      "command": "node --experimental-specifier-resolution=node /absolute/path/to/your/dist/index.js"
+      "command": "node",
+      "args": ["/absolute/path/to/your/dist/index.js"],
+      "env": {
+        "JINA_API_KEY": "your_jina_api_key_here"
+      }
     }
   }
 }
