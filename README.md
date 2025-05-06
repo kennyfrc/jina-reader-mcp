@@ -196,33 +196,4 @@ For development with automatic rebuilding:
 npm run dev
 ```
 
-## Publishing to npm
-
-To publish this package to npm:
-
-1. Make sure you're logged in to npm:
-   ```bash
-   npm login
-   ```
-
-2. Build the package:
-   ```bash
-   npm run build
-   ```
-
-3. Publish to npm:
-   ```bash
-   npm publish --access public
-   ```
-
-   The `--access public` flag is required for scoped packages (those with @username prefix).
-
-4. Once published, users can install it globally:
-   ```bash
-   npm install -g @kennyfrc/jina-mcp
-   ```
-
-   Or run it directly with npx:
-   ```bash
-   npx -y @kennyfrc/jina-mcp
-   ```
+For publishing instructions, see the [docs/publishing.md](docs/publishing.md) file.
